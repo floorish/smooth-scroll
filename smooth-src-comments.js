@@ -89,7 +89,7 @@ Scroller = {
         for (i=0;i<a.length;i++) {
             l = a[i];
 
-            if(l.href && l.href.indexOf('#') != -1 && ((l.pathname==location.pathname) || ('/'+l.pathname==location.pathname)) ) {
+            if(l.href && l.href.indexOf('#') != -1 && l.href.indexOf('#') != l.href.length-1 && ((l.pathname==location.pathname) || ('/'+l.pathname==location.pathname)) ) {
 
                 Scroller.add(l,'click',Scroller.end);
 
