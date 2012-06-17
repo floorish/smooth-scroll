@@ -1,10 +1,11 @@
 /*--------------------------------------------------------------------------
  *  Smooth Scroller Script, version 1.0.1
  *  (c) 2007 Dezinerfolio Inc. <midart@gmail.com>
+ *  Edited by @floorish
  *
  *  For details, please check the website : http://dezinerfolio.com/
  *
-/*--------------------------------------------------------------------------*/
+  --------------------------------------------------------------------------*/
 
 Scroller = {
 	// control the speed of the scroller.
@@ -13,9 +14,9 @@ Scroller = {
 
 	// returns the Y position of the div
 	gy: function (d) {
-		gy = d.offsetTop
+		gy = d.offsetTop;
 		if (d.offsetParent) {
-            while (d = d.offsetParent) {
+            while (d == d.offsetParent) {
                 gy += d.offsetTop;
             }
         }
@@ -25,18 +26,18 @@ Scroller = {
 	// returns the current scroll position
 	scrollTop: function (){
 		body = document.body;
-	    d = document.documentElement;
-	    if (body && body.scrollTop) return body.scrollTop;
-	    if (d && d.scrollTop) return d.scrollTop;
-	    if (window.pageYOffset) return window.pageYOffset;
-	    return 0;
+        d = document.documentElement;
+        if (body && body.scrollTop) return body.scrollTop;
+        if (d && d.scrollTop) return d.scrollTop;
+        if (window.pageYOffset) return window.pageYOffset;
+        return 0;
 	},
 
 	// attach an event for an element
 	// (element, type, function)
 	add: function(event, body, d) {
-	    if (event.addEventListener) return event.addEventListener(body, d,false);
-	    if (event.attachEvent) return event.attachEvent('on'+body, d);
+        if (event.addEventListener) return event.addEventListener(body, d,false);
+        if (event.attachEvent) return event.attachEvent('on'+body, d);
 	},
 
 	// kill an event of an element
@@ -70,8 +71,8 @@ Scroller = {
 
 		window.scrollTo(0,a);
 
-	  	if(a==d || Scroller.offsetTop==a) clearInterval(Scroller.interval);
-	  	Scroller.offsetTop = a;
+        if(a==d || Scroller.offsetTop==a) clearInterval(Scroller.interval);
+        Scroller.offsetTop = a;
 	},
 
 	// initializer that adds the renderer to the onload function of the window
@@ -84,7 +85,6 @@ Scroller = {
 
         a = document.getElementsByTagName('a');
         Scroller.end(this);
-        window.onscroll;
 
         for (i=0;i<a.length;i++) {
             l = a[i];
@@ -100,7 +100,7 @@ Scroller = {
 
                     if(e) {
                         clearInterval(Scroller.interval);
-                        Scroller.interval = setInterval(function(){ Scroller.scroll(Scroller.gy(e)) },10);
+                        Scroller.interval = setInterval(function(){ Scroller.scroll(Scroller.gy(e)); },10);
                     } else {
                         a = document.getElementsByTagName('a');
                         for (i=0;i<a.length;i++) {
@@ -109,15 +109,16 @@ Scroller = {
                                 (function(e) {
                                     Scroller.interval = setInterval(function(){ Scroller.scroll(Scroller.gy(e)); },10);
                                 })(a[i]);
+                                break;
                             }
                         }
                     }
 
-                }
+                };
             }
         }
     }
-}
+};
 
 // invoke the initializer of the scroller
 Scroller.init();
