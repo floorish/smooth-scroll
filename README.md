@@ -1,12 +1,17 @@
 Smooth scroll
 =============
 
-A simple smooth scrolling library for html anchors.
+A simple javascript smooth scrolling library for html anchors.
 This script is an adaptation of http://www.dezinerfolio.com/2007/08/08/df-javascript-smooth-scroll 
 
-Changes:
+- Very light weight (Just 2KB minified, no need for jQuery)
+- Natural easing of scroll speed
+- Include script and it works (see `Scroller.init()` in the source file)
+
+### Changes:
 
 - Added element ids as possible target
+- Only used on elements that have a existing target
 
 
 ---
