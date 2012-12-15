@@ -11,7 +11,7 @@ This script is an adaptation of http://www.dezinerfolio.com/2007/08/08/df-javasc
 ### Changes:
 
 - Added element ids as possible target
-- Only used on elements that have a existing target
+- Only used on elements that have an existing target
 
 
 ---

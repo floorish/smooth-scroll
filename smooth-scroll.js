@@ -13,20 +13,20 @@ Scroller = {
 	speed:10,
 
 	// returns the Y position of the div
-	gy: function (d) {
-		gy = d.offsetTop;
-		if (d.offsetParent) {
-            while (d == d.offsetParent) {
-                gy += d.offsetTop;
+	gy: function (elem) {
+		var y = elem.offsetTop;
+		if (elem.offsetParent) {
+            while (elem == elem.offsetParent) {
+                y += elem.offsetTop;
             }
         }
-		return gy;
+		return y;
 	},
 
 	// returns the current scroll position
-	scrollTop: function (){
-		body = document.body;
-        d = document.documentElement;
+	scrollTop: function () {
+		var body = document.body;
+        var d = document.documentElement;
         if (body && body.scrollTop) return body.scrollTop;
         if (d && d.scrollTop) return d.scrollTop;
         if (window.pageYOffset) return window.pageYOffset;
@@ -34,14 +34,13 @@ Scroller = {
 	},
 
 	// attach an event for an element
-	// (element, type, function)
-	add: function(event, body, d) {
-        if (event.addEventListener) return event.addEventListener(body, d,false);
-        if (event.attachEvent) return event.attachEvent('on'+body, d);
+	add: function(elem, type, func) {
+        if (elem.addEventListener) return elem.addEventListener(type, func, false);
+        if (elem.attachEvent) return elem.attachEvent('on'+type, func);
 	},
 
 	// kill an event of an element
-	end: function(e){
+	end: function(e) {
         if (window.event) {
             window.event.cancelBubble = true;
             window.event.returnValue = false;
@@ -53,68 +52,100 @@ Scroller = {
         }
 	},
 	
-	// move the scroll bar to the particular div.
-	scroll: function(d){
-		i = window.innerHeight || document.documentElement.clientHeight;
-		h = document.body.scrollHeight;
-		a = Scroller.scrollTop();
+	// move the viewport to the desired position
+	scroll: function(targetPos) {
 
-		if(d>a) {
-			if(h-d>i) {
-				a+=Math.ceil((d-a)/Scroller.speed);
-            } else {
-				a+=Math.ceil((d-a-(h-d))/Scroller.speed);
-            }
-        } else {
-			a = a+(d-a)/Scroller.speed;
+        // viewport height
+		var viewHeight = window.innerHeight || document.documentElement.clientHeight;
+
+        // total page height
+		var pageHeight = document.body.scrollHeight;
+
+        // current scroll position
+		var currentPos = Scroller.scrollTop();
+
+        // can't scroll beyond pageHeight: set target to lowest possible
+        if( pageHeight - targetPos < viewHeight ) {
+            targetPos = pageHeight - viewHeight;
         }
 
-		window.scrollTo(0,a);
+        // check if target is below current position
+		if(targetPos > currentPos) {
+            currentPos += Math.ceil( (targetPos - currentPos)/Scroller.speed );
+        } else {
+			currentPos += ( targetPos - currentPos)/Scroller.speed;
+        }
 
-        if(a==d || Scroller.offsetTop==a) clearInterval(Scroller.interval);
-        Scroller.offsetTop = a;
+        // scroll to new position
+		window.scrollTo(0, currentPos);
+
+        // stop if the destination is reached, or this iteration scrolled nothing
+        if(currentPos == targetPos || Scroller.previousPos == currentPos) {
+            clearInterval(Scroller.interval);
+        }
+
+        Scroller.previousPos = currentPos;
 	},
 
 	// initializer that adds the renderer to the onload function of the window
-	init: function(){
-		Scroller.add(window,'load', Scroller.render);
+	init: function() {
+		Scroller.add(window, 'load', Scroller.render);
 	},
 
 	// this method extracts all the anchors and validates then as # and attaches the events.
-    render: function(){
+    render: function() {
 
-        a = document.getElementsByTagName('a');
         Scroller.end(this);
 
-        for (i=0;i<a.length;i++) {
-            l = a[i];
+        var anchors = document.getElementsByTagName('a');
 
-            if(l.href && l.href.indexOf('#') != -1 && l.href.indexOf('#') != l.href.length-1 && ((l.pathname==location.pathname) || ('/'+l.pathname==location.pathname)) ) {
+        for ( var i = 0; i < anchors.length; i++ ) {
+            var anchor = anchors[i];
 
-                Scroller.add(l,'click',Scroller.end);
+            // check if anchor links to something in current page
+            if( anchor.href && anchor.href.indexOf('#') != -1 &&
+                    anchor.href.indexOf('#') != anchor.href.length-1 &&
+                    ((anchor.pathname == location.pathname) || ('/'+anchor.pathname == location.pathname)) ) {
 
-                l.onclick = function(){
-                    //Scroller.end(this);
-                    l = this.hash.substr(1);
-                    e = document.getElementById(l);
+                // add event listener
+                Scroller.add(anchor, 'click',
+                    function() {
+                        Scroller.end(this);
 
-                    if(e) {
-                        clearInterval(Scroller.interval);
-                        Scroller.interval = setInterval(function(){ Scroller.scroll(Scroller.gy(e)); },10);
-                    } else {
-                        a = document.getElementsByTagName('a');
-                        for (i=0;i<a.length;i++) {
-                            if(a[i].name == l){
-                                clearInterval(Scroller.interval);
-                                (function(e) {
-                                    Scroller.interval = setInterval(function(){ Scroller.scroll(Scroller.gy(e)); },10);
-                                })(a[i]);
-                                break;
+                        var target = this.hash.substr(1);
+                        var targetElem = document.getElementById(target);
+
+                        // check if target exists
+                        if( ! targetElem) {
+
+                            // check all anchors on the page for matching name attribute
+                            for ( var j=0; j < anchors.length; j++) {
+
+                                if( anchors[j].name == target ) {
+                                    targetElem = anchors[j];
+
+                                    // don't search further
+                                    break;
+                                }
+
                             }
+
                         }
+
+                        // scroll to target if it exists
+                        if ( targetElem ) {
+                            clearInterval(Scroller.interval);
+
+                            Scroller.interval = setInterval(function(){
+                                Scroller.scroll(Scroller.gy(targetElem));
+                            }, 10);
+                        }
+
                     }
 
-                };
+                );
+
+
             }
         }
     }
