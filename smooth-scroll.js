@@ -16,7 +16,7 @@ Scroller = {
 	gy: function (elem) {
 		var y = elem.offsetTop;
 		if (elem.offsetParent) {
-            while (elem == elem.offsetParent) {
+            while (elem = elem.offsetParent) {
                 y += elem.offsetTop;
             }
         }
