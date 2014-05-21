@@ -64,27 +64,38 @@ Scroller = {
         // current scroll position
 		var currentPos = Scroller.scrollTop();
 
+        // check if we are at the destination of previous iteration
+        /*if ( Scroller.previousPos !== false && Scroller.previousPos !== currentPos ) {
+            return;
+        }*/
+
         // can't scroll beyond pageHeight: set target to lowest possible
         if( pageHeight - targetPos < viewHeight ) {
             targetPos = pageHeight - viewHeight;
         }
 
+        var diff = ( targetPos - currentPos)/Scroller.speed;
+
         // check if target is below current position
-		if(targetPos > currentPos) {
-            currentPos += Math.ceil( (targetPos - currentPos)/Scroller.speed );
+        if(targetPos > currentPos) {
+            diff = Math.ceil(diff);
         } else {
-			currentPos += ( targetPos - currentPos)/Scroller.speed;
+            diff = Math.floor(diff);
         }
+
+        currentPos += diff;
 
         // scroll to new position
 		window.scrollTo(0, currentPos);
 
+        Scroller.previousPos = currentPos;
+
         // stop if the destination is reached, or this iteration scrolled nothing
-        if(currentPos == targetPos || Scroller.previousPos == currentPos) {
+        if(currentPos == targetPos || diff == 0 ) {
             clearInterval(Scroller.interval);
+            Scroller.previousPos = false;
         }
 
-        Scroller.previousPos = currentPos;
 	},
 
 	// initializer that adds the renderer to the onload function of the window
@@ -153,4 +164,3 @@ Scroller = {
 
 // invoke the initializer of the scroller
 Scroller.init();
-
