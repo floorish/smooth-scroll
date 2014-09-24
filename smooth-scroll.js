@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
- *  Smooth Scroller Script, version 1.0.1
+ *  Smooth Scroller Script, version 1.0.2
  *  (c) 2007 Dezinerfolio Inc. <midart@gmail.com>
  *  Edited by @floorish
  *
@@ -11,6 +11,7 @@ Scroller = {
 	// control the speed of the scroller.
 	// dont change it here directly, please use Scroller.speed=50;
 	speed:10,
+    offset:0,
 
 	// returns the Y position of the div
 	gy: function (elem) {
@@ -20,7 +21,7 @@ Scroller = {
                 y += elem.offsetTop;
             }
         }
-		return y;
+		return y - this.offset;
 	},
 
 	// returns the current scroll position
