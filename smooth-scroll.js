@@ -114,6 +114,7 @@ Scroller = {
         for ( var i = 0; i < anchors.length; i++ ) {
             var anchor = anchors[i];
 
+
             // check if anchor links to something in current page
             if( anchor.href && anchor.href.indexOf('#') != -1 &&
                     anchor.href.indexOf('#') != anchor.href.length-1 &&
@@ -124,7 +125,7 @@ Scroller = {
                     function() {
                         Scroller.end(this);
 
-                        var target = this.hash.substr(1);
+                        var target = this.getAttribute('href').split("#")[1];
                         var targetElem = document.getElementById(target);
 
                         // check if target exists
